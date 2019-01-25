@@ -1,8 +1,14 @@
 {
   "name": "logkitty",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Display pretty Logcat logs without Android Studio with intuitive Command Line Interface.",
-  "keywords": ["logcat", "cli", "android", "android studio", "logging"],
+  "keywords": [
+    "logcat",
+    "cli",
+    "android",
+    "android studio",
+    "logging"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/zamotany/logkitty.git"
