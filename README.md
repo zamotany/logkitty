@@ -9,6 +9,8 @@
 
 Display __pretty__ Logcat logs __without Android Studio__ with __intuitive__ Command Line Interface.
 
+![Demo](./logkitty.gif)
+
 ## Installation
 
 ```bash
@@ -41,7 +43,7 @@ logkitty <command> [options]
 
 * `-U, -u` - Unknown priority (lowest)
 * `-v, -v` - Verbose priority
-* `-D, -d` - Debug priority
+* `-D, -d` - Debug priority (default)
 * `-I, -i` - Info priority
 * `-W, -w` - Warn priority
 * `-E, -e` - Error priority
@@ -52,7 +54,7 @@ For example `logkitty all -W` will display all logs with priority __warn__, __er
 
 ### Examples
 
-Show all logs with tag `ReactNativeJS`:
+Show all logs with tag `ReactNativeJS` (and default priority - __debug and above__):
 
 ```
 logkitty tag ReactNativeJS

@@ -33,12 +33,14 @@ function satisfiesPriority(
   entry: Entry,
   priorities: { [key: string]: boolean }
 ): boolean {
-  const lowestPriority = Math.min(
-    ...Object.keys(priorities)
-      .filter((key: string) => priorities[key])
-      .map((key: string) => {
-        return Priority.fromLetter(key === 'U' ? '?' : key) || Priority.SILENT;
-      })
-  );
+  const parsedPriorities = Object.keys(priorities)
+    .filter((key: string) => priorities[key])
+    .map((key: string) => {
+      return Priority.fromLetter(key === 'U' ? '?' : key) || Priority.SILENT;
+    });
+  const lowestPriority = parsedPriorities.length
+    ? Math.min(...parsedPriorities)
+    : Priority.DEBUG;
+
   return entry.priority >= lowestPriority;
 }
