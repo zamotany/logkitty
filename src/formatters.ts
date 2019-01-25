@@ -7,51 +7,54 @@ import {
   AnsiColor,
   AnsiModifier,
 } from 'ansi-fragments';
+import { CodeError } from './errors';
 
-export default function printEntry(entry: Entry) {
-  let priorityColor: AnsiColor = 'white';
-  let priorityModifier: AnsiModifier | undefined;
-  let shouldColorizeMessage = false;
+export function formatError(error: CodeError): string {
+  return container(
+    color('red', '✖︎ Ups, something went wrong'),
+    pad(2, '\n'),
+    color('red', modifier('bold', 'CODE'), ' ▶︎ '),
+    error.code || 'ERR_UNKNOWN',
+    pad(1, '\n'),
+    color('red', modifier('bold', 'MESSAGE'), ' ▶︎ '),
+    error.message
+  ).build();
+}
+
+export function formatEntry(entry: Entry): string {
+  let priorityColor: AnsiColor = 'none';
+  let priorityModifier: AnsiModifier = 'none';
+  let messageColor: AnsiColor = 'none';
 
   if (entry.priority === Priority.FATAL || entry.priority === Priority.ERROR) {
     priorityColor = 'red';
-    shouldColorizeMessage = true;
+    messageColor = 'red';
   } else if (entry.priority === Priority.WARN) {
     priorityColor = 'yellow';
-    shouldColorizeMessage = true;
+    messageColor = 'yellow';
   } else if (entry.priority === Priority.VERBOSE) {
     priorityModifier = 'dim';
   }
 
-  const priorityInfo = `${Priority.toLetter(entry.priority)} |`;
-  const separator = '▶︎';
-  const message = shouldColorizeMessage
-    ? color(priorityColor, entry.message)
-    : entry.message;
   const output = container(
     modifier('dim', parseDate(entry.date)),
     pad(1),
     color(
       priorityColor,
-      priorityModifier ? modifier(priorityModifier, priorityInfo) : priorityInfo
+      modifier(priorityModifier, `${Priority.toLetter(entry.priority)} |`)
     ),
     pad(1),
     modifier(
       'bold',
-      color(
-        priorityColor,
-        priorityModifier ? modifier(priorityModifier, entry.tag) : entry.tag
-      )
+      color(priorityColor, modifier(priorityModifier, entry.tag))
     ),
     pad(1),
-    color(
-      priorityColor,
-      priorityModifier ? modifier('dim', separator) : separator
-    ),
+    color(priorityColor, modifier(priorityModifier, '▶︎')),
     pad(1),
-    priorityModifier ? modifier('dim', message) : message
+    color(priorityColor, modifier(priorityModifier, entry.message))
   ).build();
-  process.stdout.write(`${output}\n`);
+
+  return `${output}\n`;
 }
 
 function parseDate(value: Date): string {

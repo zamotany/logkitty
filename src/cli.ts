@@ -1,7 +1,10 @@
-import { spawn, execSync } from 'child_process';
-import logcat, { Priority } from 'adbkit-logcat';
+import { Entry } from 'adbkit-logcat';
 import yargs from 'yargs';
-import processEntry from './processEntry';
+import { getAbdPath, getApplicationPid, spawnLogcatProcess } from './adb';
+import LogcatReader from './LogcatReader';
+import { getMinPriority } from './utils';
+import { formatEntry, formatError } from './formatters';
+import { CodeError } from './errors';
 
 const priorityOptions = {
   U: {
@@ -34,7 +37,12 @@ const {
   .command('tag <tags ...>', 'Show logs matching given tags', priorityOptions)
   .command(
     'app <appId>',
-    'Show logs only from given application',
+    'Show logs from application with given identifier',
+    priorityOptions
+  )
+  .command(
+    'match <regexes...>',
+    'Show logs matching given patterns',
     priorityOptions
   )
   .command(
@@ -49,6 +57,7 @@ const {
     'Filter logs to only include ones with MyTag tag and priority INFO and above'
   )
   .example('$0 app com.example.myApp', 'Show all logs from com.example.myApp')
+  .example('$0 match device', 'Show all logs matching /device/gm regex')
   .example(
     '$0 app com.example.myApp -E',
     'Show all logs from com.example.myApp with priority ERROR and above'
@@ -72,42 +81,37 @@ const selectedPriorities = {
   S: Boolean(args.s),
 };
 
-// Clear buffer
-execSync('adb logcat -c');
+try {
+  const adbPath = getAbdPath();
+  const targetProcessId =
+    command === 'app'
+      ? getApplicationPid(adbPath, args.appId as string)
+      : undefined;
+  const logcatProcess = spawnLogcatProcess(adbPath);
 
-const pid =
-  command === 'app'
-    ? parseInt(execSync(`adb shell pidof -s ${args.appId}`).toString(), 10)
-    : -1;
-
-const logcatProcess = spawn('adb', ['logcat', '-B'], {
-  stdio: 'pipe',
-});
-
-process.on('exit', () => {
-  logcatProcess.kill();
-});
-
-const reader = logcat.readStream(logcatProcess.stdout, { fixLineFeeds: false });
-if (command === 'custom') {
-  (args.patterns as string[]).forEach((patter: string) => {
-    const [tag, priorityLetter] = patter.split(':');
-    const priority = Priority.fromLetter(priorityLetter);
-    if (tag === '*' && priority === Priority.SILENT) {
-      reader.excludeAll();
-    } else if (tag === '*' && priority !== Priority.SILENT) {
-      reader.includeAll(priority);
-    } else {
-      reader.include(tag, priority);
-    }
+  process.on('exit', () => {
+    logcatProcess.kill();
   });
-}
 
-reader.on(
-  'entry',
-  processEntry(command, {
-    priorities: selectedPriorities,
-    pid,
-    tags: (args.tags as string[]) || [],
-  })
-);
+  const reader = new LogcatReader(logcatProcess.stdout);
+  reader.onEntry = (entry: Entry) => {
+    process.stdout.write(formatEntry(entry));
+  };
+
+  if (command === 'custom') {
+    reader.setCustomPatterns(args.patterns as string[]);
+  } else {
+    reader.setFilter(command as 'tag' | 'app' | 'all' | 'match', {
+      tags: args.tags as string[] | undefined,
+      processId: targetProcessId,
+      regexes: args.regexes
+        ? (args.regexes as string[]).map((value: string) => new RegExp(value))
+        : undefined,
+      minPriority: getMinPriority(selectedPriorities),
+    });
+  }
+} catch (error) {
+  // tslint:disable-next-line: no-console
+  console.log(formatError(error as CodeError));
+  process.exit(1);
+}

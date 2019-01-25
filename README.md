@@ -34,12 +34,13 @@ logkitty <command> [options]
 
 * `tag <tags...>` - Show logs with matching tags.
 * `app <appId>` - Show logs from application with given identifier.
+* `match <regexes...>` - Show logs matching given patterns (all regexes have flags `g` and `m`).
 * `custom <patterns...>` - Use custom [patters supported by Logcat](https://developer.android.com/studio/command-line/logcat#filteringOutput).
 * `all` - Show all logs.
 
 ### Options
 
-`tag`, `app` and `all` commands support additional filtering options (sorted by priority):
+`tag`, `app`, `match` and `all` commands support additional filtering options (sorted by priority):
 
 * `-U, -u` - Unknown priority (lowest)
 * `-v, -v` - Verbose priority
@@ -64,6 +65,12 @@ Show all logs with priority __info and above__ from application with identifier 
 
 ```
 logkitty app com.example.myApplication -i
+```
+
+Show all logs matching `/CodePush/gm` regex:
+
+```
+logkitty match CodePush
 ```
 
 Show all logs with priority __error__ or __fatal__:
