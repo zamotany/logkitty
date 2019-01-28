@@ -51,6 +51,10 @@ const {
   )
   .command('all', 'Show all logs', priorityOptions)
   .demandCommand(1)
+  .option('adb-path', {
+    type: 'string',
+    describe: 'Use custom path to ADB',
+  })
   .example('$0 tag MyTag', 'Filter logs to only include ones with MyTag tag')
   .example(
     '$0 tag MyTag -I',
@@ -68,6 +72,7 @@ const {
   )
   .help('h')
   .alias('h', 'help')
+  .alias('v', 'version')
   .version();
 
 const selectedPriorities = {
@@ -82,7 +87,7 @@ const selectedPriorities = {
 };
 
 try {
-  const adbPath = getAbdPath();
+  const adbPath = getAbdPath(args['adb-path']);
   const targetProcessId =
     command === 'app'
       ? getApplicationPid(adbPath, args.appId as string)

@@ -40,6 +40,16 @@ logkitty <command> [options]
 
 ### Options
 
+#### Common
+
+All command accept the following options:
+
+* `--adb-path <path>` - Custom path to ADB executable/binary.
+* `-h, --help` - Display help
+* `-v, --version` - Display version
+
+#### Specific
+
 `tag`, `app`, `match` and `all` commands support additional filtering options (sorted by priority):
 
 * `-U, -u` - Unknown priority (lowest)
