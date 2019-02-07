@@ -10,23 +10,25 @@ const codes = {
   SILENT: 8,
 };
 
+export type PriorityNames = keyof typeof codes;
+
 export const Priority = {
   ...codes,
-  fromName(name: keyof typeof codes): number {
+  fromName(name: PriorityNames): number {
     const value = codes[name];
     return value ? value : 0;
   },
-  toName(code: number): keyof typeof codes {
+  toName(code: number): PriorityNames {
     return (
-      (Object.keys(codes) as Array<keyof typeof codes>).find(
-        (key: keyof typeof codes) => codes[key] === code
+      (Object.keys(codes) as PriorityNames[]).find(
+        (key: PriorityNames) => codes[key] === code
       ) || 'UNKNOWN'
     );
   },
   fromLetter(letter: string): number {
     return codes[
-      (Object.keys(codes) as Array<keyof typeof codes>).find(
-        (key: keyof typeof codes) => key[0] === letter.toUpperCase()
+      (Object.keys(codes) as PriorityNames[]).find(
+        (key: PriorityNames) => key[0] === letter.toUpperCase()
       ) || 'UNKNOWN'
     ];
   },

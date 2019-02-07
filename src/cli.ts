@@ -1,11 +1,12 @@
 import yargs from 'yargs';
 import AndroidParser from './android/AndroidParser';
-import { runLoggingProcess, getApplicationPid } from './android/adb';
+import { runLoggingProcess } from './android/adb';
 import { formatEntry, formatError } from './formatters';
 import { CodeError } from './errors';
 import { Entry, IParser, IFilter } from './types';
 import { ChildProcess } from 'child_process';
 import { AndroidFilter } from './android/AndroidFilter';
+import { getMinPriority } from './utils';
 
 const priorityOptions = {
   U: {
@@ -90,35 +91,6 @@ const selectedPriorities = {
 const platform = 'android';
 
 try {
-  //   const adbPath = getAbdPath(args['adb-path']);
-  //   const targetProcessId =
-  //     command === 'app'
-  //       ? getApplicationPid(args.appId as string, adbPath)
-  //       : undefined;
-  //   const logcatProcess = spawnLogcatProcess(adbPath);
-
-  //   process.on('exit', () => {
-  //     logcatProcess.kill();
-  //   });
-
-  //   const reader = new LogcatReader(logcatProcess.stdout);
-  //   reader.onEntry = (entry: Entry) => {
-  //     process.stdout.write(formatEntry(entry));
-  //   };
-
-  //   if (command === 'custom') {
-  //     reader.setCustomPatterns(args.patterns as string[]);
-  //   } else {
-  //     reader.setFilter(command as 'tag' | 'app' | 'all' | 'match', {
-  //       tags: args.tags as string[] | undefined,
-  //       processId: targetProcessId,
-  //       regexes: args.regexes
-  //         ? (args.regexes as string[]).map((value: string) => new RegExp(value))
-  //         : undefined,
-  //       minPriority: getMinPriority(selectedPriorities),
-  //     });
-  //   }
-
   let loggingProcess: ChildProcess;
   let parser: IParser;
   let filter: IFilter;
@@ -126,7 +98,27 @@ try {
   if (platform === 'android') {
     loggingProcess = runLoggingProcess(args['adb-path']);
     parser = new AndroidParser();
-    filter = new AndroidFilter();
+    const androidFilter = new AndroidFilter(getMinPriority(selectedPriorities));
+    switch (command) {
+      case 'app':
+        androidFilter.setFilterByApp(args.appId as string, args['adb-path']);
+        break;
+      case 'tag':
+        androidFilter.setFilterByTag(args.tags as string[]);
+        break;
+      case 'match':
+        androidFilter.setFilterByMatch(
+          (args.regexes as string[]).map(
+            (value: string) => new RegExp(value, 'gm')
+          )
+        );
+        break;
+      case 'custom':
+        androidFilter.setCustomFilter(args.patterns as string[]);
+      case 'all':
+      default:
+    }
+    filter = androidFilter;
   } else {
     throw new Error(`Unsupported platform: ${platform}`);
   }

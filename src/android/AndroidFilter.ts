@@ -1,5 +1,6 @@
 import { IFilter, Entry } from '../types';
 import { getApplicationPid } from './adb';
+import { Priority } from './constants';
 
 type Filter = (entry: Entry) => boolean;
 
@@ -37,8 +38,23 @@ export class AndroidFilter implements IFilter {
     };
   }
 
-  setCustomFilter(filterSpecs: string[]) {
-    throw new Error('TODO');
+  setCustomFilter(patterns: string[]) {
+    const tagFilters: { [key: string]: number } = patterns.reduce(
+      (acc: { [key: string]: number }, pattern: string) => {
+        const [tag, priority] = pattern.split(':');
+        return {
+          ...acc,
+          [tag]: Priority.fromLetter(priority),
+        };
+      },
+      {}
+    );
+    this.filter = (entry: Entry) => {
+      return (
+        entry.priority >= (tagFilters[entry.tag] || Priority.UNKNOWN) ||
+        entry.priority >= (tagFilters['*'] || Priority.UNKNOWN)
+      );
+    };
   }
 
   shouldInclude(entry: Entry) {
