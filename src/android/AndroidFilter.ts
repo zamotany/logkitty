@@ -51,7 +51,7 @@ export class AndroidFilter implements IFilter {
     );
     this.filter = (entry: Entry) => {
       return (
-        entry.priority >= (tagFilters[entry.tag] || Priority.UNKNOWN) ||
+        entry.priority >= (tagFilters[entry.tag] || Priority.SILENT) ||
         entry.priority >= (tagFilters['*'] || Priority.UNKNOWN)
       );
     };

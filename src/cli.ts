@@ -115,6 +115,7 @@ try {
         break;
       case 'custom':
         androidFilter.setCustomFilter(args.patterns as string[]);
+        break;
       case 'all':
       default:
     }
