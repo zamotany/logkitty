@@ -24,11 +24,6 @@
   resolved "https://registry.yarnpkg.com/@types/yargs/-/yargs-12.0.7.tgz#a9dc9b6db5f585396d05c1f07f08020a3a768db1"
   integrity sha512-lVPWmPTzmjvYKQ1BONzcu+DdunbVWn72/x5RZYeES03/6gLsRHEv3nPIjuLG1lbmeXUqUuQ3iJDMj6oy5MFNfQ==
 
-adbkit-logcat@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/adbkit-logcat/-/adbkit-logcat-2.0.1.tgz#d4986b9fc7cfda42733389d46a52124abef43ca5"
-  integrity sha512-MznVzzEzcrWhIaIyblll+a0AL1TICJe/yuaia7HDYTAtiNabR/9amJkAnLt30U8/W7MVBc3mvU1jB/6MJ/TYHw==
-
 ansi-align@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ansi-align/-/ansi-align-2.0.0.tgz#c36aeccba563b89ceb556f3690f0b1d9e3547f7f"

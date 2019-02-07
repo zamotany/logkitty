@@ -1,4 +1,3 @@
-import { Entry, Priority } from 'adbkit-logcat';
 import {
   container,
   color,
@@ -8,13 +7,15 @@ import {
   AnsiModifier,
 } from 'ansi-fragments';
 import { CodeError } from './errors';
+import { Priority } from './android/constants';
+import { Entry } from './types';
 
-export function formatError(error: CodeError): string {
+export function formatError(error: CodeError | Error): string {
   return container(
     color('red', '✖︎ Ups, something went wrong'),
     pad(2, '\n'),
     color('red', modifier('bold', 'CODE'), ' ▶︎ '),
-    error.code || 'ERR_UNKNOWN',
+    'code' in error ? error.code : 'ERR_UNKNOWN',
     pad(1, '\n'),
     color('red', modifier('bold', 'MESSAGE'), ' ▶︎ '),
     error.message

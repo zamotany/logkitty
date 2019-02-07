@@ -1,4 +1,4 @@
-import { Priority } from 'adbkit-logcat';
+import { Priority } from './android/constants';
 
 export function getMinPriority(
   priorities: { [key: string]: boolean },

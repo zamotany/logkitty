@@ -6,7 +6,12 @@ import {
   ERR_CANNOT_GET_APP_PID,
   ERR_CANNOT_CLEAN_LOGCAT_BUFFER,
   ERR_CANNOT_START_LOGCAT,
-} from './errors';
+} from '../errors';
+
+export function runLoggingProcess(adbPath?: string): ChildProcess {
+  const execPath = getAbdPath(adbPath);
+  return spawnLogcatProcess(execPath);
+}
 
 export function getAbdPath(customPath?: string): string {
   if (customPath) {
@@ -29,7 +34,7 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
   }
 
   try {
-    return spawn(adbPath, ['logcat', '-B'], {
+    return spawn(adbPath, ['logcat', '-v', 'time', 'process', 'tag'], {
       stdio: 'pipe',
     });
   } catch (error) {
@@ -38,12 +43,12 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
 }
 
 export function getApplicationPid(
-  adbPath: string,
-  applicationId: string
+  applicationId: string,
+  adbPath?: string
 ): number {
   let output: Buffer | undefined;
   try {
-    output = execSync(`${adbPath} shell pidof -s ${applicationId}`);
+    output = execSync(`${getAbdPath(adbPath)} shell pidof -s ${applicationId}`);
   } catch (error) {
     throw new CodeError(ERR_CANNOT_GET_APP_PID, (error as Error).message);
   }

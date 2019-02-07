@@ -1,10 +1,11 @@
-import { Entry } from 'adbkit-logcat';
 import yargs from 'yargs';
-import { getAbdPath, getApplicationPid, spawnLogcatProcess } from './adb';
-import LogcatReader from './LogcatReader';
-import { getMinPriority } from './utils';
+import AndroidParser from './android/AndroidParser';
+import { runLoggingProcess, getApplicationPid } from './android/adb';
 import { formatEntry, formatError } from './formatters';
 import { CodeError } from './errors';
+import { Entry, IParser, IFilter } from './types';
+import { ChildProcess } from 'child_process';
+import { AndroidFilter } from './android/AndroidFilter';
 
 const priorityOptions = {
   U: {
@@ -86,37 +87,73 @@ const selectedPriorities = {
   S: Boolean(args.s),
 };
 
+const platform = 'android';
+
 try {
-  const adbPath = getAbdPath(args['adb-path']);
-  const targetProcessId =
-    command === 'app'
-      ? getApplicationPid(adbPath, args.appId as string)
-      : undefined;
-  const logcatProcess = spawnLogcatProcess(adbPath);
+  //   const adbPath = getAbdPath(args['adb-path']);
+  //   const targetProcessId =
+  //     command === 'app'
+  //       ? getApplicationPid(args.appId as string, adbPath)
+  //       : undefined;
+  //   const logcatProcess = spawnLogcatProcess(adbPath);
+
+  //   process.on('exit', () => {
+  //     logcatProcess.kill();
+  //   });
+
+  //   const reader = new LogcatReader(logcatProcess.stdout);
+  //   reader.onEntry = (entry: Entry) => {
+  //     process.stdout.write(formatEntry(entry));
+  //   };
+
+  //   if (command === 'custom') {
+  //     reader.setCustomPatterns(args.patterns as string[]);
+  //   } else {
+  //     reader.setFilter(command as 'tag' | 'app' | 'all' | 'match', {
+  //       tags: args.tags as string[] | undefined,
+  //       processId: targetProcessId,
+  //       regexes: args.regexes
+  //         ? (args.regexes as string[]).map((value: string) => new RegExp(value))
+  //         : undefined,
+  //       minPriority: getMinPriority(selectedPriorities),
+  //     });
+  //   }
+
+  let loggingProcess: ChildProcess;
+  let parser: IParser;
+  let filter: IFilter;
+
+  if (platform === 'android') {
+    loggingProcess = runLoggingProcess(args['adb-path']);
+    parser = new AndroidParser();
+    filter = new AndroidFilter();
+  } else {
+    throw new Error(`Unsupported platform: ${platform}`);
+  }
 
   process.on('exit', () => {
-    logcatProcess.kill();
+    loggingProcess.kill();
   });
 
-  const reader = new LogcatReader(logcatProcess.stdout);
-  reader.onEntry = (entry: Entry) => {
-    process.stdout.write(formatEntry(entry));
-  };
-
-  if (command === 'custom') {
-    reader.setCustomPatterns(args.patterns as string[]);
-  } else {
-    reader.setFilter(command as 'tag' | 'app' | 'all' | 'match', {
-      tags: args.tags as string[] | undefined,
-      processId: targetProcessId,
-      regexes: args.regexes
-        ? (args.regexes as string[]).map((value: string) => new RegExp(value))
-        : undefined,
-      minPriority: getMinPriority(selectedPriorities),
+  loggingProcess.stdout.on('data', (raw: string | Buffer) => {
+    const messages = parser.splitMessages(raw.toString());
+    const entries = parser.parseMessages(messages);
+    entries.forEach((entry: Entry) => {
+      if (filter.shouldInclude(entry)) {
+        process.stdout.write(formatEntry(entry));
+      }
     });
-  }
+  });
+
+  loggingProcess.stdout.on('error', (error: Error) => {
+    terminate(error);
+  });
 } catch (error) {
+  terminate(error as CodeError | Error);
+}
+
+function terminate(error: CodeError | Error) {
   // tslint:disable-next-line: no-console
-  console.log(formatError(error as CodeError));
+  console.log(formatError(error));
   process.exit(1);
 }
