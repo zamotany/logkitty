@@ -1,11 +1,9 @@
-import { ChildProcess } from 'child_process';
-
 export type Entry = {
   date: Date;
   pid: number;
   priority: number;
   tag: string;
-  message: string;
+  messages: string[];
 };
 
 export interface IParser {

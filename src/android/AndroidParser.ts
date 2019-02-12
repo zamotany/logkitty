@@ -1,4 +1,3 @@
-import assert from 'assert';
 import { IParser, Entry } from '../types';
 import { Priority } from './constants';
 
@@ -22,34 +21,53 @@ export default class AndroidParser implements IParser {
   }
 
   parseMessages(messages: string[]): Entry[] {
-    return messages.map((rawMessage: string) => {
-      const timeMatch = rawMessage.match(AndroidParser.timeRegex);
-      if (!timeMatch) {
-        throw new Error(`Time regex was not matched in message: ${rawMessage}`);
-      }
+    return messages
+      .map((rawMessage: string) => {
+        const timeMatch = rawMessage.match(AndroidParser.timeRegex);
+        if (!timeMatch) {
+          throw new Error(
+            `Time regex was not matched in message: ${rawMessage}`
+          );
+        }
 
-      const headerMatch = rawMessage
-        .slice(timeMatch[0].length)
-        .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
+        const headerMatch = rawMessage
+          .slice(timeMatch[0].length)
+          .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
 
-      const [, priority, tag, pid] = headerMatch;
-      const now = new Date();
-      return {
-        date: new Date(
-          now.getFullYear(),
-          now.getMonth(),
-          now.getDate(),
-          parseInt(timeMatch[1], 10),
-          parseInt(timeMatch[2], 10),
-          parseInt(timeMatch[3], 10)
-        ),
-        pid: parseInt(pid.trim(), 10) || 0,
-        priority: Priority.fromLetter(priority),
-        tag: tag.trim() || 'unknown',
-        message: rawMessage
-          .slice(timeMatch[0].length + headerMatch[0].length)
-          .trim(),
-      };
-    });
+        const [, priority, tag, pid] = headerMatch;
+        const now = new Date();
+        return {
+          date: new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            parseInt(timeMatch[1], 10),
+            parseInt(timeMatch[2], 10),
+            parseInt(timeMatch[3], 10)
+          ),
+          pid: parseInt(pid.trim(), 10) || 0,
+          priority: Priority.fromLetter(priority),
+          tag: tag.trim() || 'unknown',
+          messages: [
+            rawMessage
+              .slice(timeMatch[0].length + headerMatch[0].length)
+              .trim(),
+          ],
+        };
+      })
+      .reduce((acc: Entry[], entry: Entry) => {
+        if (
+          acc.length > 0 &&
+          acc[acc.length - 1].date.getTime() === entry.date.getTime() &&
+          acc[acc.length - 1].tag === entry.tag &&
+          acc[acc.length - 1].pid === entry.pid &&
+          acc[acc.length - 1].priority === entry.priority
+        ) {
+          acc[acc.length - 1].messages.push(...entry.messages);
+          return acc;
+        }
+
+        return [...acc, entry];
+      }, []);
   }
 }

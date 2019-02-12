@@ -33,7 +33,11 @@ export class AndroidFilter implements IFilter {
     this.filter = (entry: Entry) => {
       return (
         entry.priority >= this.minPriority &&
-        Boolean(regexes.find((reg: RegExp) => reg.test(entry.message)))
+        Boolean(
+          regexes.find((reg: RegExp) =>
+            Boolean(entry.messages.find((message: string) => reg.test(message)))
+          )
+        )
       );
     };
   }

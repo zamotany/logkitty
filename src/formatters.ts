@@ -5,6 +5,7 @@ import {
   pad,
   AnsiColor,
   AnsiModifier,
+  ifElse,
 } from 'ansi-fragments';
 import { CodeError } from './errors';
 import { Priority } from './android/constants';
@@ -52,7 +53,29 @@ export function formatEntry(entry: Entry): string {
     pad(1),
     color(priorityColor, modifier(priorityModifier, '▶︎')),
     pad(1),
-    color(priorityColor, modifier(priorityModifier, entry.message))
+    color(priorityColor, modifier(priorityModifier, entry.messages[0])),
+    ifElse(
+      entry.messages.length > 1,
+      container(
+        ...entry.messages
+          .slice(1)
+          .map((line: string, index: number, arr: string[]) =>
+            container(
+              pad(1, '\n'),
+              pad(entry.tag.length + 16),
+              color(
+                priorityColor,
+                modifier(
+                  priorityColor === 'none' ? 'dim' : 'none',
+                  `${index === arr.length - 1 ? '└' : '│'} `
+                )
+              ),
+              color(priorityColor, modifier(priorityModifier, line))
+            )
+          )
+      ),
+      ''
+    )
   ).build();
 
   return `${output}\n`;
