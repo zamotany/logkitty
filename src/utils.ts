@@ -7,7 +7,7 @@ export function getMinPriority(
   const parsedPriorities = Object.keys(priorities)
     .filter((key: string) => priorities[key])
     .map((key: string) => {
-      return Priority.fromLetter(key === 'U' ? '?' : key) || Priority.SILENT;
+      return Priority.fromLetter(key) || Priority.SILENT;
     });
 
   return parsedPriorities.length

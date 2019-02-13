@@ -1,13 +1,12 @@
 const codes = {
   UNKNOWN: 0,
-  DEFAULT: 1,
-  VERBOSE: 2,
-  DEBUG: 3,
-  INFO: 4,
-  WARN: 5,
-  ERROR: 6,
-  FATAL: 7,
-  SILENT: 8,
+  VERBOSE: 1,
+  DEBUG: 2,
+  INFO: 3,
+  WARN: 4,
+  ERROR: 5,
+  FATAL: 6,
+  SILENT: 7,
 };
 
 export type PriorityNames = keyof typeof codes;
