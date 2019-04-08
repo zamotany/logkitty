@@ -1,12 +1,16 @@
 import yargs from 'yargs';
-import AndroidParser from './android/AndroidParser';
-import { runLoggingProcess } from './android/adb';
+import {
+  logkitty,
+  makeAppFilter,
+  makeTagsFilter,
+  makeMatchFilter,
+  makeCustomFilter,
+  FilterCreator,
+} from './api';
 import { formatEntry, formatError } from './formatters';
 import { CodeError } from './errors';
-import { Entry, IParser, IFilter } from './types';
-import { ChildProcess } from 'child_process';
-import { AndroidFilter } from './android/AndroidFilter';
 import { getMinPriority } from './utils';
+import { Entry } from './types';
 
 const priorityOptions = {
   U: {
@@ -88,61 +92,44 @@ const selectedPriorities = {
   S: Boolean(args.s),
 };
 
-const platform = 'android';
-
 try {
-  let loggingProcess: ChildProcess;
-  let parser: IParser;
-  let filter: IFilter;
-
-  if (platform === 'android') {
-    loggingProcess = runLoggingProcess(args['adb-path']);
-    parser = new AndroidParser();
-    const androidFilter = new AndroidFilter(getMinPriority(selectedPriorities));
-    switch (command) {
-      case 'app':
-        androidFilter.setFilterByApp(args.appId as string, args['adb-path']);
-        break;
-      case 'tag':
-        androidFilter.setFilterByTag(args.tags as string[]);
-        break;
-      case 'match':
-        androidFilter.setFilterByMatch(
-          (args.regexes as string[]).map(
-            (value: string) => new RegExp(value, 'gm')
-          )
-        );
-        break;
-      case 'custom':
-        androidFilter.setCustomFilter(args.patterns as string[]);
-        break;
-      case 'all':
-      default:
-    }
-    filter = androidFilter;
-  } else {
-    throw new Error(`Unsupported platform: ${platform}`);
+  let filter: FilterCreator | undefined;
+  switch (command) {
+    case 'app':
+      filter = makeAppFilter(args.appId as string);
+      break;
+    case 'tag':
+      filter = makeTagsFilter(...(args.tags as string[]));
+      break;
+    case 'match':
+      filter = makeMatchFilter(
+        ...(args.regexes as string[]).map(
+          (value: string) => new RegExp(value, 'gm')
+        )
+      );
+      break;
+    case 'custom':
+      filter = makeCustomFilter(...(args.patterns as string[]));
+      break;
+    case 'all':
+    default:
   }
 
-  process.on('exit', () => {
-    loggingProcess.kill();
+  const emitter = logkitty({
+    platform: 'android',
+    priority: getMinPriority(selectedPriorities),
+    filter,
   });
 
-  loggingProcess.stdout.on('data', (raw: string | Buffer) => {
-    const messages = parser.splitMessages(raw.toString());
-    const entries = parser.parseMessages(messages);
-    entries.forEach((entry: Entry) => {
-      if (filter.shouldInclude(entry)) {
-        process.stdout.write(formatEntry(entry));
-      }
-    });
+  emitter.on('entry', (entry: Entry) => {
+    process.stdout.write(formatEntry(entry));
   });
 
-  loggingProcess.stdout.on('error', (error: Error) => {
+  emitter.on('error', (error: Error) => {
     terminate(error);
   });
 } catch (error) {
-  terminate(error as CodeError | Error);
+  terminate(error as Error | CodeError);
 }
 
 function terminate(error: CodeError | Error) {
