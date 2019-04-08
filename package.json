@@ -1,6 +1,6 @@
 {
   "name": "logkitty",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "Display pretty Logcat logs without Android Studio with intuitive Command Line Interface.",
   "keywords": [
     "logcat",
