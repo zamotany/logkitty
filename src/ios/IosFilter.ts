@@ -1,10 +1,8 @@
 import { IFilter, Entry } from '../types';
-import { getApplicationPid } from './adb';
-import { Priority } from './constants';
 
 type Filter = (entry: Entry) => boolean;
 
-export default class AndroidFilter implements IFilter {
+export default class IosFilter implements IFilter {
   private readonly minPriority: number;
   private filter: Filter;
 
@@ -26,13 +24,6 @@ export default class AndroidFilter implements IFilter {
     };
   }
 
-  setFilterByApp(applicationId: string, adbPath?: string) {
-    const pid = getApplicationPid(applicationId, adbPath);
-    this.filter = (entry: Entry) => {
-      return entry.priority >= this.minPriority && entry.pid === pid;
-    };
-  }
-
   setFilterByMatch(regexes: RegExp[]) {
     this.filter = (entry: Entry) => {
       return (
@@ -42,26 +33,6 @@ export default class AndroidFilter implements IFilter {
             Boolean(entry.messages.find((message: string) => reg.test(message)))
           )
         )
-      );
-    };
-  }
-
-  setCustomFilter(patterns: string[]) {
-    const tagFilters: { [key: string]: number } = patterns.reduce(
-      (acc: { [key: string]: number }, pattern: string) => {
-        const [tag, priority] = pattern.split(':');
-        return {
-          ...acc,
-          [tag]: Priority.fromLetter(priority),
-        };
-      },
-      {}
-    );
-    this.filter = (entry: Entry) => {
-      return (
-        (entry.tag &&
-          entry.priority >= (tagFilters[entry.tag] || Priority.SILENT)) ||
-        entry.priority >= (tagFilters['*'] || Priority.UNKNOWN)
       );
     };
   }

@@ -8,7 +8,8 @@ import {
   ifElse,
 } from 'ansi-fragments';
 import { CodeError } from './errors';
-import { Priority } from './android/constants';
+import { Priority as AndroidPriority } from './android/constants';
+import { Priority as IosPriority } from './ios/constants';
 import { Entry } from './types';
 
 export function formatError(error: CodeError | Error): string {
@@ -26,15 +27,22 @@ export function formatError(error: CodeError | Error): string {
 export function formatEntry(entry: Entry): string {
   let priorityColor: AnsiColor = 'none';
   let priorityModifier: AnsiModifier = 'none';
-  let messageColor: AnsiColor = 'none';
 
-  if (entry.priority === Priority.FATAL || entry.priority === Priority.ERROR) {
+  if (
+    (entry.platform === 'android' && entry.priority >= AndroidPriority.ERROR) ||
+    (entry.platform === 'ios' && entry.priority >= IosPriority.ERROR)
+  ) {
     priorityColor = 'red';
-    messageColor = 'red';
-  } else if (entry.priority === Priority.WARN) {
+  } else if (
+    (entry.platform === 'android' && entry.priority === AndroidPriority.WARN) ||
+    (entry.platform === 'ios' && entry.priority === IosPriority.WARNING)
+  ) {
     priorityColor = 'yellow';
-    messageColor = 'yellow';
-  } else if (entry.priority === Priority.VERBOSE) {
+  } else if (
+    (entry.platform === 'android' &&
+      entry.priority === AndroidPriority.VERBOSE) ||
+    (entry.platform === 'ios' && entry.priority === IosPriority.DEBUG)
+  ) {
     priorityModifier = 'dim';
   }
 
@@ -43,12 +51,22 @@ export function formatEntry(entry: Entry): string {
     pad(1),
     color(
       priorityColor,
-      modifier(priorityModifier, `${Priority.toLetter(entry.priority)} |`)
+      modifier(
+        priorityModifier,
+        `${
+          entry.platform === 'android'
+            ? AndroidPriority.toLetter(entry.priority)
+            : IosPriority.toLetter(entry.priority)
+        } |`
+      )
     ),
     pad(1),
     modifier(
       'bold',
-      color(priorityColor, modifier(priorityModifier, entry.tag))
+      color(
+        priorityColor,
+        modifier(priorityModifier, entry.tag || entry.appId || '')
+      )
     ),
     pad(1),
     color(priorityColor, modifier(priorityModifier, '▶︎')),
@@ -62,7 +80,7 @@ export function formatEntry(entry: Entry): string {
           .map((line: string, index: number, arr: string[]) =>
             container(
               pad(1, '\n'),
-              pad(entry.tag.length + 16),
+              pad((entry.tag || entry.appId || '').length + 16),
               color(
                 priorityColor,
                 modifier(

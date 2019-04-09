@@ -2,13 +2,13 @@ import { spawn, execSync, ChildProcess } from 'child_process';
 import path from 'path';
 import {
   CodeError,
-  ERR_UNPROCESSABLE_PID,
-  ERR_CANNOT_GET_APP_PID,
-  ERR_CANNOT_CLEAN_LOGCAT_BUFFER,
-  ERR_CANNOT_START_LOGCAT,
+  ERR_ANDROID_UNPROCESSABLE_PID,
+  ERR_ANDROID_CANNOT_GET_APP_PID,
+  ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
+  ERR_ANDROID_CANNOT_START_LOGCAT,
 } from '../errors';
 
-export function runLoggingProcess(adbPath?: string): ChildProcess {
+export function runAndroidLoggingProcess(adbPath?: string): ChildProcess {
   const execPath = getAbdPath(adbPath);
   return spawnLogcatProcess(execPath);
 }
@@ -28,7 +28,7 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
     execSync(`${adbPath} logcat -c`);
   } catch (error) {
     throw new CodeError(
-      ERR_CANNOT_CLEAN_LOGCAT_BUFFER,
+      ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
       (error as Error).message
     );
   }
@@ -38,7 +38,10 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
       stdio: 'pipe',
     });
   } catch (error) {
-    throw new CodeError(ERR_CANNOT_START_LOGCAT, (error as Error).message);
+    throw new CodeError(
+      ERR_ANDROID_CANNOT_START_LOGCAT,
+      (error as Error).message
+    );
   }
 }
 
@@ -50,12 +53,15 @@ export function getApplicationPid(
   try {
     output = execSync(`${getAbdPath(adbPath)} shell pidof -s ${applicationId}`);
   } catch (error) {
-    throw new CodeError(ERR_CANNOT_GET_APP_PID, (error as Error).message);
+    throw new CodeError(
+      ERR_ANDROID_CANNOT_GET_APP_PID,
+      (error as Error).message
+    );
   }
 
   const pid = output ? parseInt(output.toString(), 10) : NaN;
   if (isNaN(pid)) {
-    throw new CodeError(ERR_UNPROCESSABLE_PID);
+    throw new CodeError(ERR_ANDROID_UNPROCESSABLE_PID);
   }
 
   return pid;

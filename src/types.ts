@@ -1,9 +1,13 @@
+export type Platform = 'ios' | 'android';
+
 export type Entry = {
   date: Date;
   pid: number;
   priority: number;
-  tag: string;
+  tag?: string;
+  appId?: string;
   messages: string[];
+  platform: Platform;
 };
 
 export interface IParser {

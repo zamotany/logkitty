@@ -53,5 +53,8 @@
     "eslint": "^5.16.0",
     "jest": "^24.7.1",
     "typescript": "^3.2.4"
+  },
+  "jest": {
+    "testRegex": "/__tests__/.*\\.(test|spec)\\.ts?$"
   }
 }

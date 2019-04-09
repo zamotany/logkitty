@@ -133,7 +133,7 @@ try {
 }
 
 function terminate(error: CodeError | Error) {
-  // tslint:disable-next-line: no-console
+  // eslint-disable-next-line no-console
   console.log(formatError(error));
   process.exit(1);
 }

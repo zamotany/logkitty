@@ -1,20 +1,20 @@
 import { IParser, Entry } from '../types';
-import { Priority } from './constants';
+import { Priority, PriorityNames } from './constants';
 
-export default class AndroidParser implements IParser {
-  static timeRegex: RegExp = /\d{2}-\d{2} (\d{2}):(\d{2}):(\d{2}).\d{3}/m;
-  static headerRegex: RegExp = /^\s*(\w)\/(.+)\(([\s\d]+)\):/;
+export default class IosParser implements IParser {
+  static timeRegex: RegExp = /\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}\.[\d+]+/m;
+  static headerRegex: RegExp = /^\s+[a-z0-9]+\s+(\w+)\s+[a-z0-9]+\s+(\d+)\s+\d+\s+([^:]+):/;
 
   splitMessages(raw: string): string[] {
     const messages: string[] = [];
     let data = raw.toString();
-    let match = data.match(AndroidParser.timeRegex);
+    let match = data.match(IosParser.timeRegex);
     while (match) {
-      const timeHeader = match[0];
-      data = data.slice((match.index || 0) + timeHeader.length);
-      const nextMatch = data.match(AndroidParser.timeRegex);
+      const timeMatch = match[0];
+      data = data.slice((match.index || 0) + timeMatch.length);
+      const nextMatch = data.match(IosParser.timeRegex);
       const body = nextMatch ? data.slice(0, nextMatch.index) : data;
-      messages.push(`${timeHeader} ${body}`);
+      messages.push(`${timeMatch} ${body}`);
       match = nextMatch;
     }
     return messages;
@@ -24,32 +24,22 @@ export default class AndroidParser implements IParser {
     return messages
       .map(
         (rawMessage: string): Entry => {
-          const timeMatch = rawMessage.match(AndroidParser.timeRegex);
+          const timeMatch = rawMessage.match(IosParser.timeRegex);
           if (!timeMatch) {
             throw new Error(
               `Time regex was not matched in message: ${rawMessage}`
             );
           }
-
           const headerMatch = rawMessage
             .slice(timeMatch[0].length)
-            .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
-
-          const [, priority, tag, pid] = headerMatch;
-          const now = new Date();
+            .match(IosParser.headerRegex) || ['', 'Default', '-1', 'unknown'];
+          const [, priority, pid, tag] = headerMatch;
           return {
-            platform: 'android',
-            date: new Date(
-              now.getFullYear(),
-              now.getMonth(),
-              now.getDate(),
-              parseInt(timeMatch[1], 10),
-              parseInt(timeMatch[2], 10),
-              parseInt(timeMatch[3], 10)
-            ),
+            platform: 'ios',
+            date: new Date(timeMatch[0]),
             pid: parseInt(pid.trim(), 10) || 0,
-            priority: Priority.fromLetter(priority),
-            tag: tag.trim() || 'unknown',
+            priority: Priority.fromName(priority as PriorityNames),
+            tag,
             messages: [
               rawMessage
                 .slice(timeMatch[0].length + headerMatch[0].length)
@@ -62,14 +52,13 @@ export default class AndroidParser implements IParser {
         if (
           acc.length > 0 &&
           acc[acc.length - 1].date.getTime() === entry.date.getTime() &&
-          acc[acc.length - 1].tag === entry.tag &&
+          acc[acc.length - 1].appId === entry.appId &&
           acc[acc.length - 1].pid === entry.pid &&
           acc[acc.length - 1].priority === entry.priority
         ) {
           acc[acc.length - 1].messages.push(...entry.messages);
           return acc;
         }
-
         return [...acc, entry];
       }, []);
   }

@@ -1,32 +1,53 @@
-import { IFilter, Entry } from './types';
+/* Common */
 import { EventEmitter } from 'events';
-import { AndroidFilter } from './android/AndroidFilter';
-import { runLoggingProcess } from './android/adb';
-import AndroidParser from './android/AndroidParser';
+import { IFilter, Entry, Platform } from './types';
 
+/* Android */
+import AndroidFilter from './android/AndroidFilter';
+import AndroidParser from './android/AndroidParser';
+import { runAndroidLoggingProcess } from './android/adb';
+export { Priority as AndroidPriority } from './android/constants';
+
+/* iOS */
+import IosParser from './ios/IosParser';
+import IosFilter from './ios/IosFilter';
+import { runSimulatorLoggingProcess } from './ios/simulator';
+export { Priority as IosPriority } from './ios/constants';
+
+/* Exports */
 export { formatEntry, formatError } from './formatters';
-export { Priority } from './android/constants';
 export { Entry } from './types';
 
 export type LogkittyOptions = {
-  platform: 'android';
+  platform: Platform;
   adbPath?: string;
   priority?: number;
   filter?: FilterCreator;
 };
 
-export type FilterCreator = (minPriority?: number, adbPath?: string) => IFilter;
+export type FilterCreator = (
+  platform: Platform,
+  minPriority?: number,
+  adbPath?: string
+) => IFilter;
 
 export function makeTagsFilter(...tags: string[]): FilterCreator {
-  return (minPriority?: number) => {
-    const filter = new AndroidFilter(minPriority);
+  return (platform: Platform, minPriority?: number) => {
+    const filter =
+      platform === 'android'
+        ? new AndroidFilter(minPriority)
+        : new IosFilter(minPriority);
     filter.setFilterByTag(tags);
     return filter;
   };
 }
 
 export function makeAppFilter(appIdentifier: string): FilterCreator {
-  return (minPriority?: number, adbPath?: string) => {
+  return (platform: Platform, minPriority?: number, adbPath?: string) => {
+    if (platform !== 'android') {
+      throw new Error('App filter is only available for Android');
+    }
+
     const filter = new AndroidFilter(minPriority);
     filter.setFilterByApp(appIdentifier, adbPath);
     return filter;
@@ -34,15 +55,22 @@ export function makeAppFilter(appIdentifier: string): FilterCreator {
 }
 
 export function makeMatchFilter(...regexes: RegExp[]): FilterCreator {
-  return (minPriority?: number) => {
-    const filter = new AndroidFilter(minPriority);
+  return (platform: Platform, minPriority?: number) => {
+    const filter =
+      platform === 'android'
+        ? new AndroidFilter(minPriority)
+        : new IosFilter(minPriority);
     filter.setFilterByMatch(regexes);
     return filter;
   };
 }
 
 export function makeCustomFilter(...patterns: string[]): FilterCreator {
-  return (minPriority?: number) => {
+  return (platform: Platform, minPriority?: number) => {
+    if (platform !== 'android') {
+      throw new Error('Custom filter is only available for Android');
+    }
+
     const filter = new AndroidFilter(minPriority);
     filter.setCustomFilter(patterns);
     return filter;
@@ -53,16 +81,29 @@ export function logkitty(options: LogkittyOptions): EventEmitter {
   const { platform, adbPath, priority, filter: createFilter } = options;
   const emitter = new EventEmitter();
 
-  if (platform !== 'android') {
-    emitter.emit('error', new Error(`Platform ${platform} is not supported`));
-    return emitter;
+  if (
+    !['ios', 'android'].some(
+      availablePlatform => availablePlatform === platform
+    )
+  ) {
+    throw new Error(`Platform ${platform} is not supported`);
   }
 
-  const parser = new AndroidParser();
-  const filter = createFilter
-    ? createFilter(priority, adbPath)
-    : new AndroidFilter(priority);
-  const loggingProcess = runLoggingProcess(adbPath);
+  const parser = platform === 'android' ? new AndroidParser() : new IosParser();
+  let filter: IFilter;
+  if (createFilter) {
+    filter = createFilter(platform, priority, adbPath);
+  } else {
+    filter =
+      platform === 'android'
+        ? new AndroidFilter(priority)
+        : new IosFilter(priority);
+  }
+
+  const loggingProcess =
+    platform === 'android'
+      ? runAndroidLoggingProcess(adbPath)
+      : runSimulatorLoggingProcess();
 
   process.on('exit', () => {
     loggingProcess.kill();
@@ -70,16 +111,21 @@ export function logkitty(options: LogkittyOptions): EventEmitter {
   });
 
   loggingProcess.stdout.on('data', (raw: string | Buffer) => {
+    let entryToLog: Entry | undefined;
     try {
       const messages = parser.splitMessages(raw.toString());
       const entries = parser.parseMessages(messages);
       entries.forEach((entry: Entry) => {
         if (filter.shouldInclude(entry)) {
-          emitter.emit('entry', entry);
+          entryToLog = entry;
         }
       });
     } catch (error) {
       emitter.emit('error', error);
+    }
+
+    if (entryToLog) {
+      emitter.emit('entry', entryToLog);
     }
   });
 
