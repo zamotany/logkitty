@@ -4,6 +4,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "target": "es2015",
+    "lib": ["es2016"],
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "build",

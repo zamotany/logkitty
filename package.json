@@ -26,7 +26,7 @@
     "build"
   ],
   "scripts": {
-    "lint": "tslint -t stylish --project tsconfig.json",
+    "lint": "eslint --ext '.js,.ts' ./src",
     "build:source": "babel src --out-dir build --extensions '.js,.ts' --ignore '**/__tests__/**' --source-maps --delete-dir-on-start",
     "build:def": "tsc --emitDeclarationOnly",
     "prepare": "yarn build:source && yarn build:def",
@@ -43,13 +43,15 @@
     "@babel/plugin-proposal-class-properties": "^7.4.0",
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-typescript": "^7.3.3",
-    "@callstack/tslint-config": "^0.1.0",
+    "@callstack/eslint-config": "^4.1.0",
     "@types/jest": "^24.0.11",
     "@types/node": "^10.12.18",
     "@types/yargs": "^12.0.7",
+    "@typescript-eslint/eslint-plugin": "^1.6.0",
+    "@typescript-eslint/parser": "^1.6.0",
     "babel-jest": "^24.7.1",
+    "eslint": "^5.16.0",
     "jest": "^24.7.1",
-    "tslint": "^5.12.1",
     "typescript": "^3.2.4"
   }
 }
