@@ -34,8 +34,8 @@ export function formatEntry(entry: Entry): string {
   ) {
     priorityColor = 'red';
   } else if (
-    (entry.platform === 'android' && entry.priority === AndroidPriority.WARN) ||
-    (entry.platform === 'ios' && entry.priority === IosPriority.WARNING)
+    entry.platform === 'android' &&
+    entry.priority === AndroidPriority.WARN
   ) {
     priorityColor = 'yellow';
   } else if (
