@@ -5,7 +5,17 @@ export function runSimulatorLoggingProcess(): ChildProcess {
   try {
     return spawn(
       'xcrun',
-      ['simctl', 'spawn', 'booted', 'log', 'stream', '--type', 'log'],
+      [
+        'simctl',
+        'spawn',
+        'booted',
+        'log',
+        'stream',
+        '--type',
+        'log',
+        '--level',
+        'debug',
+      ],
       {
         stdio: 'pipe',
       }

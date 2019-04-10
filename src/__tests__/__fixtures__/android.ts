@@ -6,9 +6,11 @@ export const ANDROID_RAW_LOG_FIXTURES = [
   '04-08 01:32:25.371 D/wificond(  935): Scheduled scan is not running!',
 ];
 
+const year = new Date().getFullYear();
+
 export const ANDROID_PARSED_LOG_FIXTURES = [
   {
-    date: new Date('2019-04-08T22:58:53.000Z'),
+    date: new Date(`${year}-04-08T22:58:53.000Z`),
     pid: 934,
     priority: 5,
     tag: 'storaged',
@@ -16,7 +18,7 @@ export const ANDROID_PARSED_LOG_FIXTURES = [
     platform: 'android',
   },
   {
-    date: new Date('2019-04-08T23:10:54.000Z'),
+    date: new Date(`${year}-04-08T23:10:54.000Z`),
     pid: 1383,
     priority: 3,
     tag: 'chatty',
@@ -24,7 +26,7 @@ export const ANDROID_PARSED_LOG_FIXTURES = [
     platform: 'android',
   },
   {
-    date: new Date('2019-04-08T23:32:25.000Z'),
+    date: new Date(`${year}-04-08T23:32:25.000Z`),
     pid: 935,
     priority: 4,
     tag: 'wificond',
@@ -32,7 +34,7 @@ export const ANDROID_PARSED_LOG_FIXTURES = [
     platform: 'android',
   },
   {
-    date: new Date('2019-04-08T23:32:25.000Z'),
+    date: new Date(`${year}-04-08T23:32:25.000Z`),
     pid: 935,
     priority: 2,
     tag: 'wificond',

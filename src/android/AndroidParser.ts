@@ -2,7 +2,7 @@ import { IParser, Entry } from '../types';
 import { Priority } from './constants';
 
 export default class AndroidParser implements IParser {
-  static timeRegex: RegExp = /\d{2}-\d{2} (\d{2}):(\d{2}):(\d{2}).\d{3}/m;
+  static timeRegex: RegExp = /(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2}).\d{3}/m;
   static headerRegex: RegExp = /^\s*(\w)\/(.+)\(([\s\d]+)\):/;
 
   splitMessages(raw: string): string[] {
@@ -36,16 +36,15 @@ export default class AndroidParser implements IParser {
             .match(AndroidParser.headerRegex) || ['', 'U', 'unknown', '-1'];
 
           const [, priority, tag, pid] = headerMatch;
-          const now = new Date();
           return {
             platform: 'android',
             date: new Date(
-              now.getFullYear(),
-              now.getMonth(),
-              now.getDate(),
-              parseInt(timeMatch[1], 10),
-              parseInt(timeMatch[2], 10),
-              parseInt(timeMatch[3], 10)
+              new Date().getFullYear(),
+              parseInt(timeMatch[1], 10) - 1,
+              parseInt(timeMatch[2], 10) + 1,
+              parseInt(timeMatch[3], 10),
+              parseInt(timeMatch[4], 10),
+              parseInt(timeMatch[5], 10)
             ),
             pid: parseInt(pid.trim(), 10) || 0,
             priority: Priority.fromLetter(priority),

@@ -14,7 +14,7 @@ export type PriorityNames = keyof typeof codes;
 export const Priority = {
   ...codes,
   fromName(name: PriorityNames): number {
-    const value = codes[name];
+    const value = codes[name.toUpperCase() as PriorityNames];
     return value ? value : 0;
   },
   toName(code: number): PriorityNames {

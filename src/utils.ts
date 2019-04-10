@@ -1,15 +1,13 @@
-import { Priority } from './android/constants';
-
 export function getMinPriority(
+  Priority: { fromName: (key: any) => number },
   priorities: { [key: string]: boolean },
-  defaultPriority: number = Priority.DEBUG
+  defaultPriority: number
 ): number {
   const parsedPriorities = Object.keys(priorities)
     .filter((key: string) => priorities[key])
     .map((key: string) => {
-      return Priority.fromLetter(key) || Priority.SILENT;
+      return Priority.fromName(key);
     });
-
   return parsedPriorities.length
     ? Math.min(...parsedPriorities)
     : defaultPriority;

@@ -678,10 +678,10 @@
     lodash "^4.17.11"
     to-fast-properties "^2.0.0"
 
-"@callstack/eslint-config@^4.1.0":
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/@callstack/eslint-config/-/eslint-config-4.1.0.tgz#5fb738276787d3219a80d7872aa07ae1e2705c88"
-  integrity sha512-4n7/h3moQeDaBFobIgemtbeGPpiZISNfRyRlPfDyx03NLS5Rcdj2jKhEQwf0QuYKNfalTigy//FdFv88RW7kgw==
+"@callstack/eslint-config@^4.2.0":
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/@callstack/eslint-config/-/eslint-config-4.2.0.tgz#e402a5d10cdd863176ddaf8f5e66faa07d9169f2"
+  integrity sha512-osbf60i9kWW5DtuJj87L8JnqxbyfLIox1G+B3HqI5oJX945Bbam0Iny4Qho9viPom8Z3TYbDGQd6PaJSDYiYPg==
   dependencies:
     babel-eslint "^10.0.1"
     eslint-config-prettier "^4.1.0"
