@@ -71,7 +71,7 @@ logkitty android tag -h # prints tag command syntax and options for android
   * `-F, -f` - Fatal priority
   * `-S, -s` - Silent priority (highest)
 
-  For example `logkitty all -W` will display all logs with priority __warn__, __error__ and __fatal__.
+  For example `logkitty android all -W` will display all logs with priority __warn__, __error__ and __fatal__.
 
 * platform `ios`:
 
