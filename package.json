@@ -1,12 +1,17 @@
 {
   "name": "logkitty",
   "version": "0.4.0",
-  "description": "Display pretty Logcat logs without Android Studio with intuitive Command Line Interface.",
+  "description": "Display pretty Android and iOS logs without Android Studio or Console.app, with intuitive Command Line Interface.",
   "keywords": [
     "logcat",
     "cli",
     "android",
     "android studio",
+    "ios",
+    "Console.app",
+    "console",
+    "log",
+    "logs",
     "logging"
   ],
   "repository": {
@@ -22,6 +27,7 @@
   "bin": "bin/logkitty.js",
   "main": "build/api.js",
   "files": [
+    "docs",
     "bin",
     "build"
   ],
