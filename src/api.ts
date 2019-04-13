@@ -12,6 +12,7 @@ export { Priority as AndroidPriority } from './android/constants';
 import IosParser from './ios/IosParser';
 import IosFilter from './ios/IosFilter';
 import { runSimulatorLoggingProcess } from './ios/simulator';
+import { CodeError, ERR_IOS_NO_SIMULATORS_BOOTED } from './errors';
 export { Priority as IosPriority } from './ios/constants';
 
 /* Exports */
@@ -108,6 +109,20 @@ export function logkitty(options: LogkittyOptions): EventEmitter {
   process.on('exit', () => {
     loggingProcess.kill();
     emitter.emit('exit');
+  });
+
+  loggingProcess.stderr.on('data', (errorData: string | Buffer) => {
+    if (
+      platform === 'ios' &&
+      errorData.toString().includes('No devices are booted.')
+    ) {
+      emitter.emit(
+        'error',
+        new CodeError(ERR_IOS_NO_SIMULATORS_BOOTED, 'No simulators are booted.')
+      );
+    } else {
+      emitter.emit('error', new Error(errorData.toString()));
+    }
   });
 
   loggingProcess.stdout.on('data', (raw: string | Buffer) => {
