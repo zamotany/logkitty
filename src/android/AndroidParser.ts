@@ -41,7 +41,7 @@ export default class AndroidParser implements IParser {
             date: new Date(
               new Date().getFullYear(),
               parseInt(timeMatch[1], 10) - 1,
-              parseInt(timeMatch[2], 10) + 1,
+              parseInt(timeMatch[2], 10),
               parseInt(timeMatch[3], 10),
               parseInt(timeMatch[4], 10),
               parseInt(timeMatch[5], 10)
