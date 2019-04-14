@@ -36,6 +36,7 @@ describe('Node API', () => {
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
           stdout: loggingEmitter,
+          stderr: new EventEmitter(),
         }));
 
         const emitter = logkitty({
@@ -76,6 +77,7 @@ describe('Node API', () => {
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
           stdout: loggingEmitter,
+          stderr: new EventEmitter(),
         }));
         (getApplicationPid as jest.Mock).mockImplementationOnce(
           (appId: string) => {
@@ -111,6 +113,7 @@ describe('Node API', () => {
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
           stdout: loggingEmitter,
+          stderr: new EventEmitter(),
         }));
 
         const emitter = logkitty({
@@ -152,6 +155,7 @@ describe('Node API', () => {
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
           stdout: loggingEmitter,
+          stderr: new EventEmitter(),
         }));
 
         const emitter = logkitty({
@@ -190,6 +194,7 @@ describe('Node API', () => {
         const loggingEmitter = new EventEmitter();
         (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
           stdout: loggingEmitter,
+          stderr: new EventEmitter(),
         }));
 
         const emitter = logkitty({
@@ -223,6 +228,7 @@ describe('Node API', () => {
         (runSimulatorLoggingProcess as jest.Mock).mockImplementationOnce(
           () => ({
             stdout: loggingEmitter,
+            stderr: new EventEmitter(),
           })
         );
 
@@ -251,6 +257,7 @@ describe('Node API', () => {
         (runSimulatorLoggingProcess as jest.Mock).mockImplementationOnce(
           () => ({
             stdout: loggingEmitter,
+            stderr: new EventEmitter(),
           })
         );
 
@@ -280,6 +287,7 @@ describe('Node API', () => {
         (runSimulatorLoggingProcess as jest.Mock).mockImplementationOnce(
           () => ({
             stdout: loggingEmitter,
+            stderr: new EventEmitter(),
           })
         );
 
@@ -327,6 +335,7 @@ describe('Node API', () => {
     const loggingEmitter = new EventEmitter();
     (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
       stdout: loggingEmitter,
+      stderr: new EventEmitter(),
     }));
 
     const emitter = logkitty({
@@ -345,6 +354,7 @@ describe('Node API', () => {
     const loggingEmitter = new EventEmitter();
     (runAndroidLoggingProcess as jest.Mock).mockImplementationOnce(() => ({
       stdout: loggingEmitter,
+      stderr: new EventEmitter(),
     }));
 
     const emitter = logkitty({
