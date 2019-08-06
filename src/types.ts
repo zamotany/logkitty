@@ -1,7 +1,9 @@
+import { Dayjs } from 'dayjs';
+
 export type Platform = 'ios' | 'android';
 
 export type Entry = {
-  date: Date;
+  date: Dayjs;
   pid: number;
   priority: number;
   tag?: string;
