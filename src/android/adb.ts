@@ -52,7 +52,7 @@ export function getApplicationPid(
   let output: Buffer | undefined;
   try {
     output = execSync(
-      `"${getAdbPath(adbPath)}" shell pidof -s ${applicationId}`
+      `'${getAdbPath(adbPath)}' shell pidof -s ${applicationId}`
     );
   } catch (error) {
     throw new CodeError(
