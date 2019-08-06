@@ -5,7 +5,7 @@ import {
   ERR_ANDROID_UNPROCESSABLE_PID,
   ERR_ANDROID_CANNOT_GET_APP_PID,
   ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
-  ERR_ANDROID_CANNOT_START_LOGCAT
+  ERR_ANDROID_CANNOT_START_LOGCAT,
 } from '../errors';
 
 export function runAndroidLoggingProcess(adbPath?: string): ChildProcess {
@@ -35,7 +35,7 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
 
   try {
     return spawn(adbPath, ['logcat', '-v', 'time', 'process', 'tag'], {
-      stdio: 'pipe'
+      stdio: 'pipe',
     });
   } catch (error) {
     throw new CodeError(

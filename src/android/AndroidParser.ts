@@ -1,3 +1,4 @@
+import DayJS from 'dayjs';
 import { IParser, Entry } from '../types';
 import { Priority } from './constants';
 
@@ -38,14 +39,13 @@ export default class AndroidParser implements IParser {
           const [, priority, tag, pid] = headerMatch;
           return {
             platform: 'android',
-            date: new Date(
-              new Date().getFullYear(),
-              parseInt(timeMatch[1], 10) - 1,
-              parseInt(timeMatch[2], 10),
-              parseInt(timeMatch[3], 10),
-              parseInt(timeMatch[4], 10),
-              parseInt(timeMatch[5], 10)
-            ),
+            date: DayJS()
+              .set('month', parseInt(timeMatch[1], 10))
+              .set('day', parseInt(timeMatch[2], 10))
+              .set('hour', parseInt(timeMatch[3], 10))
+              .set('minute', parseInt(timeMatch[4], 10))
+              .set('second', parseInt(timeMatch[5], 10))
+              .set('millisecond', 0),
             pid: parseInt(pid.trim(), 10) || 0,
             priority: Priority.fromLetter(priority),
             tag: tag.trim() || 'unknown',
@@ -60,7 +60,7 @@ export default class AndroidParser implements IParser {
       .reduce((acc: Entry[], entry: Entry) => {
         if (
           acc.length > 0 &&
-          acc[acc.length - 1].date.getTime() === entry.date.getTime() &&
+          acc[acc.length - 1].date.isSame(entry.date) &&
           acc[acc.length - 1].tag === entry.tag &&
           acc[acc.length - 1].pid === entry.pid &&
           acc[acc.length - 1].priority === entry.priority

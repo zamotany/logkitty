@@ -47,7 +47,7 @@ export function formatEntry(entry: Entry): string {
   }
 
   const output = container(
-    modifier('dim', parseDate(entry.date)),
+    modifier('dim', `[${entry.date.format('HH:mm:ss')}]`),
     pad(1),
     color(
       priorityColor,
@@ -97,20 +97,4 @@ export function formatEntry(entry: Entry): string {
   ).build();
 
   return `${output}\n`;
-}
-
-function parseDate(value: Date): string {
-  const hour =
-    value.getUTCHours() < 10
-      ? `0${value.getUTCHours()}`
-      : value.getUTCHours().toString();
-  const minutes =
-    value.getUTCMinutes() < 10
-      ? `0${value.getUTCMinutes()}`
-      : value.getUTCMinutes().toString();
-  const seconds =
-    value.getUTCSeconds() < 10
-      ? `0${value.getUTCSeconds()}`
-      : value.getUTCSeconds().toString();
-  return `[${hour}:${minutes}:${seconds}]`;
 }

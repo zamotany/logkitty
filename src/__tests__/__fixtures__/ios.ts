@@ -1,3 +1,5 @@
+import DayJS from 'dayjs';
+
 export const IOS_RAW_LOG_FIXTURES = [
   '2019-04-09 16:37:15.464004+0200 0xf3e23    Default     0x0                  52389  0    testApp: (libnetwork.dylib) [com.apple.network:] nw_endpoint_flow_protocol_disconnected [C25.1 ::1.8081 cancelled socket-flow (null)] Output protocol disconnected',
   '2019-04-09 16:37:15.464628+0200 0xf3e23    Default     0x0                  52389  0    testApp: (CFNetwork) [com.apple.CFNetwork:Coalescing] removing all entries config 0x600001f5b600',
@@ -9,7 +11,7 @@ export const IOS_RAW_LOG_FIXTURES = [
 
 export const IOS_PARSED_LOG_FIXTURES = [
   {
-    date: new Date('2019-04-09 16:37:15.464004+0200'),
+    date: DayJS('2019-04-09 16:37:15.464004+0200').set('millisecond', 0),
     pid: 52389,
     priority: 1,
     tag: 'testApp',
@@ -19,7 +21,7 @@ export const IOS_PARSED_LOG_FIXTURES = [
     platform: 'ios',
   },
   {
-    date: new Date('2019-04-09 16:37:15.464628+0200'),
+    date: DayJS('2019-04-09 16:37:15.464004+0200').set('millisecond', 0),
     pid: 52389,
     priority: 1,
     tag: 'testApp',
@@ -29,7 +31,7 @@ export const IOS_PARSED_LOG_FIXTURES = [
     platform: 'ios',
   },
   {
-    date: new Date('2019-04-09 16:37:15.576332+0200'),
+    date: DayJS('2019-04-09 16:37:15.464004+0200').set('millisecond', 0),
     pid: 52389,
     priority: 3,
     tag: 'testApp',
@@ -37,7 +39,7 @@ export const IOS_PARSED_LOG_FIXTURES = [
     platform: 'ios',
   },
   {
-    date: new Date('2019-04-09 16:37:15.614114+0200'),
+    date: DayJS('2019-04-09 16:37:15.464004+0200').set('millisecond', 0),
     pid: 52389,
     priority: 1,
     tag: 'testApp',
@@ -47,7 +49,7 @@ export const IOS_PARSED_LOG_FIXTURES = [
     platform: 'ios',
   },
   {
-    date: new Date('2019-04-09 16:37:15.614124+0200'),
+    date: DayJS('2019-04-09 16:37:15.464004+0200').set('millisecond', 0),
     pid: 52389,
     priority: 1,
     tag: 'testApp',
@@ -57,7 +59,7 @@ export const IOS_PARSED_LOG_FIXTURES = [
     platform: 'ios',
   },
   {
-    date: new Date('2019-04-09 16:37:15.614170+0200'),
+    date: DayJS('2019-04-09 16:37:15.464004+0200').set('millisecond', 0),
     pid: 52389,
     priority: 1,
     tag: 'testApp1',

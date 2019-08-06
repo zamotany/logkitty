@@ -1,3 +1,4 @@
+import DayJS from 'dayjs';
 import { IParser, Entry } from '../types';
 import { Priority, PriorityNames } from './constants';
 
@@ -36,7 +37,7 @@ export default class IosParser implements IParser {
           const [, priority, pid, tag] = headerMatch;
           return {
             platform: 'ios',
-            date: new Date(timeMatch[0]),
+            date: DayJS(timeMatch[0]).set('millisecond', 0),
             pid: parseInt(pid.trim(), 10) || 0,
             priority: Priority.fromName(priority as PriorityNames),
             tag,
@@ -51,7 +52,7 @@ export default class IosParser implements IParser {
       .reduce((acc: Entry[], entry: Entry) => {
         if (
           acc.length > 0 &&
-          acc[acc.length - 1].date.getTime() === entry.date.getTime() &&
+          acc[acc.length - 1].date.isSame(entry.date) &&
           acc[acc.length - 1].appId === entry.appId &&
           acc[acc.length - 1].pid === entry.pid &&
           acc[acc.length - 1].priority === entry.priority
