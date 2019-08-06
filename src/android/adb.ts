@@ -5,15 +5,15 @@ import {
   ERR_ANDROID_UNPROCESSABLE_PID,
   ERR_ANDROID_CANNOT_GET_APP_PID,
   ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
-  ERR_ANDROID_CANNOT_START_LOGCAT,
+  ERR_ANDROID_CANNOT_START_LOGCAT
 } from '../errors';
 
 export function runAndroidLoggingProcess(adbPath?: string): ChildProcess {
-  const execPath = getAbdPath(adbPath);
+  const execPath = getAdbPath(adbPath);
   return spawnLogcatProcess(execPath);
 }
 
-export function getAbdPath(customPath?: string): string {
+export function getAdbPath(customPath?: string): string {
   if (customPath) {
     return path.resolve(customPath);
   }
@@ -35,7 +35,7 @@ export function spawnLogcatProcess(adbPath: string): ChildProcess {
 
   try {
     return spawn(adbPath, ['logcat', '-v', 'time', 'process', 'tag'], {
-      stdio: 'pipe',
+      stdio: 'pipe'
     });
   } catch (error) {
     throw new CodeError(
@@ -51,7 +51,7 @@ export function getApplicationPid(
 ): number {
   let output: Buffer | undefined;
   try {
-    output = execSync(`${getAbdPath(adbPath)} shell pidof -s ${applicationId}`);
+    output = execSync(`${getAdbPath(adbPath)} shell pidof -s ${applicationId}`);
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_GET_APP_PID,
