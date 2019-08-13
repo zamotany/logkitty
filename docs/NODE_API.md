@@ -1,6 +1,7 @@
 # Node API
 
-## Example: 
+## Example
+
 ```ts
 import {
   logkitty,
@@ -25,6 +26,7 @@ emitter.on('error', (error: Error) => {
   console.log(formatError(error));
 });
 ```
+
 ## API
 
 #### `logkitty(options: LogkittyOptions): EventEmitter`
@@ -52,7 +54,6 @@ Creates a filter from given tags (for example `ReactNative`, `ReactNativeJS`), s
 __Available only for Android.__
 
 Creates a filter for given application identifier (for example `com.example.app`), so only entries from given app will be emitted in `entry` event. Pass the returned value to `filter` property when running `logkitty`.
-
 
 #### `makeMatchFilter(...regexes: RegExp[]): FilterCreator`
 

@@ -1,6 +1,6 @@
 # logkitty
 
-[![Version][version]][package]   
+[![Version][version]][package]
 
 [![PRs Welcome][prs-welcome-badge]][prs-welcome]
 [![MIT License][license-badge]][license]
@@ -13,20 +13,20 @@ Display __pretty__ Android and iOS logs __without Android Studio or Console.app_
 
 ## Installation
 
-```bash
+```sh
 yarn global add logkitty
 ```
 
 Or if you prefer having it locally:
 
-```
+```sh
 yarn add -D logkitty
 yarn logkitty --help
 ```
 
 ## Usage
 
-```bash
+```sh
 logkitty <platform> <command> [options]
 ```
 
@@ -34,7 +34,7 @@ logkitty <platform> <command> [options]
 
 You can inspect available platforms, command and options for a given platform by adding `-h` at the end, for example:
 
-```bash
+```sh
 logkitty -h # prints available platforms and global options
 logkitty android -h # prints commands and options for android
 logkitty android tag -h # prints tag command syntax and options for android
@@ -59,7 +59,7 @@ logkitty android tag -h # prints tag command syntax and options for android
   * `-h, --help` - Display help
   * `-v, --version` - Display version
 * platform `android`:
-  
+
   `tag`, `app`, `match` and `all` commands support additional priority filtering options (sorted by priority):
 
   * `-U, -u` - Unknown priority (lowest)
@@ -85,41 +85,40 @@ logkitty android tag -h # prints tag command syntax and options for android
 
 Show all logs with tag `ReactNativeJS` (and default priority - __debug and above__):
 
-```
+```sh
 logkitty android tag ReactNativeJS
 logkitty ios tag ReactNativeJS
 ```
 
 Show all logs with priority __info and above__ from application with identifier `com.example.myApplication`:
 
-```
+```sh
 logkitty android app com.example.myApplication -i
 ```
 
 Show all logs matching `/CodePush/gm` regex:
 
-```
+```sh
 logkitty android match CodePush
 logkitty ios match CodePush
 ```
 
 Show all logs with priority __error__ or __fatal__ for Android and __error_ level for iOS:
 
-```
+```sh
 logkitty android all -e
 logkitty ios all -e
 ```
 
 Show logs using custom patterns - silence all logs and display only the onces with tag `my-tag` and priority __debug and above__:
 
-```
+```sh
 logkitty android custom *:S my-tag:D
 ```
 
 ### Node API
 
 If your building a tool and want to use Node API, head over to [Node API documentation](./docs/NODE_API.md).
-
 
 <!-- badges (common) -->
 
