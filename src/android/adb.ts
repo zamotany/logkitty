@@ -7,7 +7,7 @@ import {
   ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
   ERR_ANDROID_CANNOT_START_LOGCAT,
 } from '../errors';
-const isWin = process.platform === 'win32'
+const isWin = process.platform === 'win32';
 
 export function runAndroidLoggingProcess(adbPath?: string): ChildProcess {
   const execPath = getAdbPath(adbPath);
@@ -20,9 +20,13 @@ export function getAdbPath(customPath?: string): string {
   }
 
   if (isWin) {
-    return process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}\\platform-tools\\adb` : 'adb';
+    return process.env.ANDROID_HOME
+      ? `${process.env.ANDROID_HOME}\\platform-tools\\adb`
+      : 'adb';
   } else {
-    return process.env.ANDROID_HOME ? `${process.env.ANDROID_HOME}/platform-tools/adb` : 'adb';
+    return process.env.ANDROID_HOME
+      ? `${process.env.ANDROID_HOME}/platform-tools/adb`
+      : 'adb';
   }
 }
 
