@@ -118,7 +118,8 @@ const {
       .demandCommand(1)
       .option('adb-path', {
         type: 'string',
-        describe: 'Use custom path to ADB',
+        describe: 'Use custom path to adb',
+        nargs: 1,
       })
       .example(
         '$0 android tag MyTag',
@@ -145,7 +146,7 @@ const {
         'Silence all logs and show only ones with MyTag with priority DEBUG and above'
       )
   )
-  .command('ios <filter>', 'ios', yargs =>
+  .command('ios <filter>', 'iOS', yargs =>
     yargs
       .command(
         'tag <tags ...>',
@@ -216,6 +217,7 @@ try {
   }
   const emitter = logkitty({
     platform: platform as Platform,
+    adbPath: args.adbPath ? String(args.adbPath) : '',
     priority:
       platform === 'android'
         ? getMinPriority(
