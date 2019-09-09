@@ -34,7 +34,7 @@ emitter.on('error', (error: Error) => {
 Spawns logkitty with given options:
 
 * `platform: 'android' | 'ios'` - Platform to get the logs from: uses `adb logcat` for Android and `xcrun simctl` + `log` for iOS simulator`.
-* `adbPath?: string` - Custom path to ADB tool or `undefined` (used only when `platform` is `android`).
+* `adbPath?: string` - Custom path to adb tool or `undefined` (used only when `platform` is `android`).
 * `priority?: number` - Minimum priority of entries to show of `undefined`, which will include all entries with priority **DEBUG** (Android)/**DEFAULT** (iOS) or above.
 * `filter?: FilterCreator` - The returned value from `makeTagsFilter`/`makeAppFilter`/`makeMatchFilter`/`makeCustomFilter` or `undefined`, which will include all entries (similar to `all` command in the CLI).
 
