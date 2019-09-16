@@ -25,7 +25,7 @@ export function getAdbPath(customPath?: string): string {
 
 export function spawnLogcatProcess(adbPath: string): ChildProcess {
   try {
-    execSync(`'${adbPath}' logcat -c`);
+    execSync(`${adbPath} logcat -c`);
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
