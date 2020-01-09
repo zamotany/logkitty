@@ -1,3 +1,4 @@
+/* eslint-disable jest/no-test-callback */
 import {
   logkitty,
   AndroidPriority,
