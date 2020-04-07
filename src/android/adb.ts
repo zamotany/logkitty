@@ -55,7 +55,7 @@ export function getApplicationPid(
       'shell',
       'pidof',
       '-s',
-      applicationId
+      applicationId,
     ]);
   } catch (error) {
     throw new CodeError(
