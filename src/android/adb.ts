@@ -51,7 +51,12 @@ export function getApplicationPid(
 ): number {
   let output: Buffer | String | undefined;
   try {
-    output = execFileSync(getAdbPath(adbPath), ['shell', 'pidof', '-s', applicationId]);
+    output = execFileSync(getAdbPath(adbPath), [
+      'shell',
+      'pidof',
+      '-s',
+      applicationId
+    ]);
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_GET_APP_PID,
