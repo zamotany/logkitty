@@ -1,4 +1,4 @@
-import { spawn, execSync, ChildProcess } from 'child_process';
+import { spawn, execFileSync, ChildProcess } from 'child_process';
 import path from 'path';
 import {
   CodeError,
@@ -25,7 +25,7 @@ export function getAdbPath(customPath?: string): string {
 
 export function spawnLogcatProcess(adbPath: string): ChildProcess {
   try {
-    execSync(`${adbPath} logcat -c`);
+    execFileSync(adbPath, ['logcat', '-c']);
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_CLEAN_LOGCAT_BUFFER,
@@ -49,11 +49,14 @@ export function getApplicationPid(
   applicationId: string,
   adbPath?: string
 ): number {
-  let output: Buffer | undefined;
+  let output: Buffer | String | undefined;
   try {
-    output = execSync(
-      `'${getAdbPath(adbPath)}' shell pidof -s ${applicationId}`
-    );
+    output = execFileSync(getAdbPath(adbPath), [
+      'shell',
+      'pidof',
+      '-s',
+      applicationId,
+    ]);
   } catch (error) {
     throw new CodeError(
       ERR_ANDROID_CANNOT_GET_APP_PID,
