@@ -13,14 +13,16 @@ export function runAndroidLoggingProcess(adbPath?: string): ChildProcess {
   return spawnLogcatProcess(execPath);
 }
 
+export function getSdkRoot(): string | undefined {
+  return process.env.ANDROID_SDK_ROOT ?? process.env.ANDROID_HOME;
+}
+
 export function getAdbPath(customPath?: string): string {
   if (customPath) {
     return path.resolve(customPath);
   }
-
-  return process.env.ANDROID_HOME
-    ? `${process.env.ANDROID_HOME}/platform-tools/adb`
-    : 'adb';
+  const sdkRoot = getSdkRoot();
+  return sdkRoot ? `${sdkRoot}/platform-tools/adb` : 'adb';
 }
 
 export function spawnLogcatProcess(adbPath: string): ChildProcess {
