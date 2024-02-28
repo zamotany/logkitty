@@ -46,7 +46,7 @@ logkitty android tag -h # prints tag command syntax and options for android
   * `tag <tags...>` - Show logs with matching tags.
   * `app <appId>` - Show logs from application with given identifier.
   * `match <regexes...>` - Show logs matching given patterns (all regexes have flags `g` and `m`).
-  * `custom <patterns...>` - Use custom [patters supported by Logcat](https://developer.android.com/studio/command-line/logcat#filteringOutput).
+  * `custom <patterns...>` - Use custom [patterns supported by Logcat](https://developer.android.com/studio/command-line/logcat#filteringOutput).
   * `all` - Show all logs.
 * platform: `ios`:
   * `tag <tags...>` - Show logs with matching tags (where tag is usually a name of the app).
